@@ -1,3 +1,4 @@
+using PSIB.Services;
 using PSIB.Views.Products;
 using PSIB.Views.Customers;
 using PSIB.Views.Vendors;
@@ -10,8 +11,11 @@ namespace PSIB;
 
 public partial class AppShell : Shell
 {
-    public AppShell()
+    private readonly IAuthService _authService;
+
+    public AppShell(IAuthService authService)
     {
+        _authService = authService;
         InitializeComponent();
 
         Routing.RegisterRoute("ProductDetail", typeof(ProductDetailPage));
@@ -21,6 +25,19 @@ public partial class AppShell : Shell
         Routing.RegisterRoute("SaleDetail", typeof(SaleDetailPage));
         Routing.RegisterRoute("AccountPayableDetail", typeof(AccountPayableDetailPage));
         Routing.RegisterRoute("AccountReceivableDetail", typeof(AccountReceivableDetailPage));
+    }
+
+    protected override void OnNavigating(ShellNavigatingEventArgs args)
+    {
+        base.OnNavigating(args);
+
+        var target = args.Target.Location.OriginalString;
+        if (!target.Contains("Login") && !_authService.IsLoggedIn)
+        {
+            args.Cancel();
+            Dispatcher.Dispatch(async () =>
+                await Current.GoToAsync("//Login"));
+        }
     }
 
     public static void EnableFlyout() =>

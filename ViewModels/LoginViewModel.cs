@@ -43,7 +43,8 @@ public partial class LoginViewModel : BaseViewModel
             }
             if (initTask.IsFaulted)
             {
-                SetError($"資料庫初始化失敗：{initTask.Exception?.GetBaseException().Message}");
+                Console.Error.WriteLine($"[DB] Init FAILED: {initTask.Exception}");
+                SetError("資料庫初始化失敗，請聯絡系統管理員");
                 return;
             }
             if (!initTask.IsCompletedSuccessfully)
@@ -65,9 +66,15 @@ public partial class LoginViewModel : BaseViewModel
                 Password = string.Empty;
             }
         }
+        catch (InvalidOperationException ex)
+        {
+            // 帳號鎖定訊息可安全顯示
+            SetError(ex.Message);
+        }
         catch (Exception ex)
         {
-            SetError($"登入失敗：{ex.Message}");
+            Console.Error.WriteLine($"[Login] Unexpected error: {ex}");
+            SetError("登入時發生錯誤，請稍後再試");
         }
         finally
         {

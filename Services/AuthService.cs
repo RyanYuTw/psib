@@ -1,12 +1,17 @@
 using Microsoft.EntityFrameworkCore;
 using PSIB.Data;
 using PSIB.Models;
+using System.Collections.Concurrent;
 
 namespace PSIB.Services;
 
 public class AuthService : IAuthService
 {
+    private const int MaxFailedAttempts = 5;
+    private const int LockoutMinutes = 15;
+
     private readonly IServiceProvider _serviceProvider;
+    private readonly ConcurrentDictionary<string, (int Count, DateTime Until)> _failedAttempts = new();
     private User? _currentUser;
     private UserGroup? _currentGroup;
 
@@ -20,6 +25,16 @@ public class AuthService : IAuthService
 
     public async Task<bool> LoginAsync(string userId, string password)
     {
+        var key = userId.ToLowerInvariant();
+
+        if (_failedAttempts.TryGetValue(key, out var entry) &&
+            entry.Count >= MaxFailedAttempts &&
+            DateTime.UtcNow < entry.Until)
+        {
+            var remaining = (int)(entry.Until - DateTime.UtcNow).TotalMinutes + 1;
+            throw new InvalidOperationException($"帳號已暫時鎖定，請 {remaining} 分鐘後再試");
+        }
+
         using var scope = _serviceProvider.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
@@ -28,12 +43,23 @@ public class AuthService : IAuthService
             .Where(u => u.UserId == userId && u.IsActive)
             .FirstOrDefaultAsync();
 
-        if (user == null) return false;
+        bool valid = user != null && BCrypt.Net.BCrypt.Verify(password, user.Password);
 
-        if (!BCrypt.Net.BCrypt.Verify(password, user.Password)) return false;
+        if (!valid)
+        {
+            _failedAttempts.AddOrUpdate(key,
+                _ => (1, DateTime.UtcNow.AddMinutes(LockoutMinutes)),
+                (_, prev) =>
+                {
+                    int count = prev.Count + 1;
+                    return (count, DateTime.UtcNow.AddMinutes(LockoutMinutes));
+                });
+            return false;
+        }
 
+        _failedAttempts.TryRemove(key, out _);
         _currentUser = user;
-        _currentGroup = user.UserGroup;
+        _currentGroup = user!.UserGroup;
         return true;
     }
 

@@ -1,5 +1,6 @@
 using Bogus;
 using BCrypt.Net;
+using Microsoft.Extensions.Configuration;
 using PSIB.Models;
 
 namespace PSIB.Data;
@@ -7,10 +8,12 @@ namespace PSIB.Data;
 public class DatabaseSeeder
 {
     private readonly AppDbContext _db;
+    private readonly IConfiguration _config;
 
-    public DatabaseSeeder(AppDbContext db)
+    public DatabaseSeeder(AppDbContext db, IConfiguration config)
     {
         _db = db;
+        _config = config;
     }
 
     public async Task SeedAsync()
@@ -25,6 +28,13 @@ public class DatabaseSeeder
         await _db.SaveChangesAsync();
     }
 
+    private static string GenerateAndLogPassword(string role)
+    {
+        var pwd = Convert.ToBase64String(System.Security.Cryptography.RandomNumberGenerator.GetBytes(12));
+        Console.Error.WriteLine($"[Seed] {role} 初始密碼（請立即變更）: {pwd}");
+        return pwd;
+    }
+
     private async Task SeedBaseDataAsync()
     {
         // 使用者群組
@@ -36,13 +46,17 @@ public class DatabaseSeeder
         };
         _db.UserGroups.AddRange(groups);
 
-        // 使用者
+        // 使用者（密碼從設定檔讀取，避免寫死在程式碼中）
+        var adminPwd = _config["SeedPasswords:Admin"] ?? GenerateAndLogPassword("admin");
+        var managerPwd = _config["SeedPasswords:Manager"] ?? GenerateAndLogPassword("manager");
+        var staffPwd = _config["SeedPasswords:Staff"] ?? GenerateAndLogPassword("staff");
+
         var users = new List<User>
         {
-            new() { EmployeeNo = "0001", UserId = "admin", Password = BCrypt.Net.BCrypt.HashPassword("admin123"), Name = "系統管理員", UserGroupId = "ADMIN" },
-            new() { EmployeeNo = "0002", UserId = "manager", Password = BCrypt.Net.BCrypt.HashPassword("manager123"), Name = "王大明", UserGroupId = "MANAGER" },
-            new() { EmployeeNo = "0003", UserId = "staff1", Password = BCrypt.Net.BCrypt.HashPassword("staff123"), Name = "李小華", UserGroupId = "STAFF" },
-            new() { EmployeeNo = "0004", UserId = "staff2", Password = BCrypt.Net.BCrypt.HashPassword("staff123"), Name = "陳美玲", UserGroupId = "STAFF" }
+            new() { EmployeeNo = "0001", UserId = "admin", Password = BCrypt.Net.BCrypt.HashPassword(adminPwd), Name = "系統管理員", UserGroupId = "ADMIN" },
+            new() { EmployeeNo = "0002", UserId = "manager", Password = BCrypt.Net.BCrypt.HashPassword(managerPwd), Name = "王大明", UserGroupId = "MANAGER" },
+            new() { EmployeeNo = "0003", UserId = "staff1", Password = BCrypt.Net.BCrypt.HashPassword(staffPwd), Name = "李小華", UserGroupId = "STAFF" },
+            new() { EmployeeNo = "0004", UserId = "staff2", Password = BCrypt.Net.BCrypt.HashPassword(staffPwd), Name = "陳美玲", UserGroupId = "STAFF" }
         };
         _db.Users.AddRange(users);
 
