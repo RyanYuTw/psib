@@ -1,6 +1,6 @@
 # PSIB 進銷存管理系統
 
-適用於 Wish Estate 的進貨、銷售、庫存與帳務管理系統，以 .NET MAUI 開發，支援 Windows 與 macOS。
+進貨、銷售、庫存與帳務管理系統，以 .NET MAUI 開發，支援 Windows 與 macOS。
 
 ## 技術架構
 
