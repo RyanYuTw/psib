@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:PSIB.ViewModels"
+             xmlns:models="clr-namespace:PSIB.Models"
+             x:Class="PSIB.Views.Purchases.PurchaseDetailPage"
+             x:DataType="vm:PurchaseDetailViewModel"
+             Title="{Binding Title}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="12">
+            <Frame Style="{StaticResource CardFrame}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="採購資訊" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource Primary}" />
+                    <Label Text="採購單號" Style="{StaticResource SectionLabel}" />
+                    <Entry Text="{Binding Id}" IsReadOnly="True" Style="{StaticResource FormEntry}" BackgroundColor="{StaticResource Gray100}" />
+                    <Label Text="採購日期" Style="{StaticResource SectionLabel}" />
+                    <DatePicker Date="{Binding PurchaseDate}" Format="yyyy/MM/dd" />
+                    <Label Text="廠商 *" Style="{StaticResource SectionLabel}" />
+                    <Picker ItemsSource="{Binding Vendors}"
+                            ItemDisplayBinding="{Binding Name}"
+                            SelectedItem="{Binding SelectedVendor}"
+                            Title="請選擇廠商" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- 明細列表 -->
+            <Frame Style="{StaticResource CardFrame}">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="採購明細" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource Primary}" />
+                    <CollectionView ItemsSource="{Binding Details}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:PurchaseDetail">
+                                <Grid ColumnDefinitions="*,Auto,Auto" Padding="0,4" ColumnSpacing="8">
+                                    <Label Text="{Binding Product.Name}" VerticalOptions="Center" />
+                                    <Label Grid.Column="1" Text="{Binding Amount, StringFormat='{0:N1}'}" VerticalOptions="Center" />
+                                    <Label Grid.Column="2" Text="{Binding LineTotal, StringFormat='${0:N0}'}"
+                                           TextColor="{StaticResource Primary}" VerticalOptions="Center" />
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- 金額摘要 -->
+            <Frame Style="{StaticResource CardFrame}">
+                <VerticalStackLayout Spacing="8">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Text="小計" />
+                        <Label Grid.Column="1" Text="{Binding SubTotal, StringFormat='${0:N0}'}" FontAttributes="Bold" />
+                    </Grid>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Text="稅額 (5%)" />
+                        <Label Grid.Column="1" Text="{Binding Tax, StringFormat='${0:N0}'}" />
+                    </Grid>
+                    <BoxView HeightRequest="1" Color="{StaticResource Gray300}" />
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Text="合計" FontAttributes="Bold" FontSize="16" />
+                        <Label Grid.Column="1" Text="{Binding Total, StringFormat='${0:N0}'}"
+                               FontAttributes="Bold" FontSize="18" TextColor="{StaticResource Primary}" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Frame>
+
+            <Frame Style="{StaticResource CardFrame}">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="備註" Style="{StaticResource SectionLabel}" />
+                    <Editor Text="{Binding Memo}" Placeholder="選填" HeightRequest="80" BackgroundColor="White" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <Label Text="{Binding ErrorMessage}" TextColor="{StaticResource Danger}" FontSize="13"
+                   IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}" />
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12" Margin="0,8">
+                <Button Text="取消" Command="{Binding CancelCommand}" Style="{StaticResource SecondaryButton}" />
+                <Button Grid.Column="1" Text="儲存" Command="{Binding SaveCommand}"
+                        Style="{StaticResource PrimaryButton}" IsEnabled="{Binding IsNotBusy}" />
+            </Grid>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:PSIB.ViewModels"
+             xmlns:models="clr-namespace:PSIB.Models"
+             x:Class="PSIB.Views.AccountPayables.AccountPayableListPage"
+             x:DataType="vm:AccountPayableListViewModel"
+             Title="{Binding Title}">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+        <Frame Grid.Row="0" Style="{StaticResource CardFrame}">
+            <Grid ColumnDefinitions="*,Auto,*" ColumnSpacing="8">
+                <DatePicker Date="{Binding FromDate}" Format="yyyy/MM/dd" />
+                <Label Grid.Column="1" Text="~" VerticalOptions="Center" />
+                <DatePicker Grid.Column="2" Date="{Binding ToDate}" Format="yyyy/MM/dd" />
+            </Grid>
+        </Frame>
+
+        <CollectionView Grid.Row="1" ItemsSource="{Binding AccountPayables}" SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:AccountPayable">
+                    <Frame Style="{StaticResource CardFrame}">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="{Binding Id}" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource Primary}" />
+                                <Label Text="{Binding Vendor.Name}" FontSize="14" TextColor="{StaticResource TextPrimary}" />
+                                <HorizontalStackLayout Spacing="16">
+                                    <Label Text="{Binding PayDate, StringFormat='付款日: {0:yyyy/MM/dd}'}" FontSize="13" TextColor="{StaticResource TextSecondary}" />
+                                    <Label Text="{Binding PayAmount, StringFormat='金額: ${0:N0}'}" FontSize="14" FontAttributes="Bold"
+                                           TextColor="{StaticResource Danger}" />
+                                </HorizontalStackLayout>
+                                <Label Text="{Binding TotalBalance, StringFormat='餘額: ${0:N0}'}" FontSize="13"
+                                       TextColor="{StaticResource TextSecondary}" />
+                            </VerticalStackLayout>
+                            <Button Grid.Column="1" Text="查看"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AccountPayableListViewModel}}, Path=EditCommand}"
+                                    CommandParameter="{Binding .}" Style="{StaticResource SecondaryButton}"
+                                    VerticalOptions="Center" />
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+            <CollectionView.EmptyView>
+                <Label Text="此期間無應付帳款資料" TextColor="{StaticResource TextSecondary}"
+                       HorizontalOptions="Center" VerticalOptions="Center" Margin="0,40" />
+            </CollectionView.EmptyView>
+        </CollectionView>
+
+        <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="8" Margin="16,8">
+            <Button Text="查詢" Command="{Binding LoadCommand}" Style="{StaticResource SecondaryButton}" />
+            <Button Grid.Column="1" Text="+ 新增付款" Command="{Binding AddCommand}" Style="{StaticResource PrimaryButton}" />
+        </Grid>
+        <ActivityIndicator Grid.Row="1" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
+                           Color="{StaticResource Primary}" HorizontalOptions="Center" VerticalOptions="Center" />
+    </Grid>
+</ContentPage>

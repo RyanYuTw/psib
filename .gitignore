@@ -1,0 +1,38 @@
+## .NET / MAUI
+obj/
+bin/
+*.user
+*.suo
+.vs/
+.idea/
+*.DotSettings.user
+
+## Build artifacts
+*.Backup.tmp
+*.nupkg
+*.snupkg
+
+## 敏感設定（含密碼、連線字串）
+appsettings.json
+appsettings.*.json
+!appsettings.example.json
+
+## macOS
+.DS_Store
+*.localized
+
+## Visual Studio Code
+.vscode/
+
+## Rider
+.idea/
+
+## Test results
+TestResults/
+coverage/
+*.coverage
+*.coveragexml
+
+## Logs
+*.log
+logs/

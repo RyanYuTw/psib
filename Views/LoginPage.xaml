@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:PSIB.ViewModels"
+             x:Class="PSIB.Views.LoginPage"
+             x:DataType="vm:LoginViewModel"
+             Shell.NavBarIsVisible="False">
+
+    <Grid BackgroundColor="{StaticResource Primary}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Logo 區 -->
+        <VerticalStackLayout Grid.Row="0" VerticalOptions="End" Padding="32" Spacing="8">
+            <Label Text="PSIB" FontSize="48" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" />
+            <Label Text="進銷存管理系統" FontSize="18" TextColor="#B3D9F5" HorizontalOptions="Center" />
+            <Label Text="Wish Estate" FontSize="14" TextColor="#80BCE8" HorizontalOptions="Center" />
+        </VerticalStackLayout>
+
+        <!-- 登入表單 -->
+        <Frame Grid.Row="1" BackgroundColor="White" CornerRadius="16" Margin="32,0" Padding="32,28">
+            <VerticalStackLayout Spacing="16">
+                <Label Text="帳號" Style="{StaticResource SectionLabel}" />
+                <Entry Text="{Binding UserId}"
+                       Placeholder="請輸入帳號"
+                       Style="{StaticResource FormEntry}"
+                       ReturnType="Next" />
+
+                <Label Text="密碼" Style="{StaticResource SectionLabel}" />
+                <Entry Text="{Binding Password}"
+                       Placeholder="請輸入密碼"
+                       IsPassword="True"
+                       Style="{StaticResource FormEntry}"
+                       ReturnCommand="{Binding LoginCommand}"
+                       ReturnType="Done" />
+
+                <Label Text="{Binding ErrorMessage}"
+                       TextColor="{StaticResource Danger}"
+                       FontSize="13"
+                       IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}" />
+
+                <Button Text="登入"
+                        Command="{Binding LoginCommand}"
+                        Style="{StaticResource PrimaryButton}"
+                        IsEnabled="{Binding IsNotBusy}" />
+
+                <ActivityIndicator IsRunning="{Binding IsBusy}"
+                                   IsVisible="{Binding IsBusy}"
+                                   Color="{StaticResource Primary}"
+                                   HorizontalOptions="Center" />
+            </VerticalStackLayout>
+        </Frame>
+
+        <Label Grid.Row="2" Text="© 2024 Wish Estate" TextColor="#80BCE8"
+               HorizontalOptions="Center" VerticalOptions="End" Margin="0,0,0,24" FontSize="12" />
+    </Grid>
+</ContentPage>

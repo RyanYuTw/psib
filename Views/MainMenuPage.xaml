@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:PSIB.ViewModels"
+             x:Class="PSIB.Views.MainMenuPage"
+             x:DataType="vm:MainMenuViewModel"
+             Title="{Binding Title}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="8" Spacing="4">
+
+            <!-- 歡迎列 -->
+            <Frame Style="{StaticResource CardFrame}" BackgroundColor="{StaticResource Primary}">
+                <Grid ColumnDefinitions="*,Auto">
+                    <VerticalStackLayout>
+                        <Label Text="{Binding UserName, StringFormat='歡迎，{0}'}"
+                               FontSize="18" FontAttributes="Bold" TextColor="White" />
+                        <Label Text="{Binding TodayDate}"
+                               TextColor="#B3D9F5" FontSize="13" />
+                    </VerticalStackLayout>
+                    <Button Text="登出" Command="{Binding LogoutCommand}"
+                            BackgroundColor="Transparent" TextColor="White"
+                            BorderColor="White" BorderWidth="1" CornerRadius="6"
+                            Padding="12,6" Grid.Column="1" />
+                </Grid>
+            </Frame>
+
+            <!-- 今日摘要 -->
+            <Label Text="今日摘要" Style="{StaticResource PageTitle}" Margin="16,12,16,4" />
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" Margin="4">
+                <Frame Grid.Row="0" Grid.Column="0" Style="{StaticResource SummaryCard}" BackgroundColor="#EBF5FB">
+                    <VerticalStackLayout>
+                        <Label Text="今日銷售" Style="{StaticResource SectionLabel}" />
+                        <Label Text="{Binding TodaySales, StringFormat='${0:N0}'}"
+                               FontSize="20" FontAttributes="Bold" TextColor="{StaticResource Primary}" />
+                    </VerticalStackLayout>
+                </Frame>
+                <Frame Grid.Row="0" Grid.Column="1" Style="{StaticResource SummaryCard}" BackgroundColor="#EAFAF1">
+                    <VerticalStackLayout>
+                        <Label Text="今日採購" Style="{StaticResource SectionLabel}" />
+                        <Label Text="{Binding TodayPurchases, StringFormat='${0:N0}'}"
+                               FontSize="20" FontAttributes="Bold" TextColor="{StaticResource Secondary}" />
+                    </VerticalStackLayout>
+                </Frame>
+                <Frame Grid.Row="1" Grid.Column="0" Style="{StaticResource SummaryCard}" BackgroundColor="#FEF9E7">
+                    <VerticalStackLayout>
+                        <Label Text="本月銷售" Style="{StaticResource SectionLabel}" />
+                        <Label Text="{Binding MonthSales, StringFormat='${0:N0}'}"
+                               FontSize="18" FontAttributes="Bold" TextColor="{StaticResource Tertiary}" />
+                    </VerticalStackLayout>
+                </Frame>
+                <Frame Grid.Row="1" Grid.Column="1" Style="{StaticResource SummaryCard}" BackgroundColor="#FDEDEC">
+                    <VerticalStackLayout>
+                        <Label Text="待付帳款" Style="{StaticResource SectionLabel}" />
+                        <Label Text="{Binding PendingPayables, StringFormat='{0} 筆'}"
+                               FontSize="18" FontAttributes="Bold" TextColor="{StaticResource Danger}" />
+                    </VerticalStackLayout>
+                </Frame>
+            </Grid>
+
+            <!-- 快速入口 -->
+            <Label Text="功能選單" Style="{StaticResource PageTitle}" Margin="16,12,16,4" />
+            <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto,Auto" Margin="4" RowSpacing="4" ColumnSpacing="4">
+                <Button Grid.Row="0" Grid.Column="0" Text="商品管理" Command="{Binding GoToProductsCommand}"
+                        Style="{StaticResource PrimaryButton}" />
+                <Button Grid.Row="0" Grid.Column="1" Text="客戶管理" Command="{Binding GoToCustomersCommand}"
+                        Style="{StaticResource PrimaryButton}" />
+                <Button Grid.Row="0" Grid.Column="2" Text="廠商管理" Command="{Binding GoToVendorsCommand}"
+                        Style="{StaticResource PrimaryButton}" />
+                <Button Grid.Row="1" Grid.Column="0" Text="採購管理" Command="{Binding GoToPurchasesCommand}"
+                        BackgroundColor="{StaticResource Secondary}" TextColor="White"
+                        CornerRadius="6" Padding="16,10" FontSize="14" FontAttributes="Bold" />
+                <Button Grid.Row="1" Grid.Column="1" Text="銷售管理" Command="{Binding GoToSalesCommand}"
+                        BackgroundColor="{StaticResource Secondary}" TextColor="White"
+                        CornerRadius="6" Padding="16,10" FontSize="14" FontAttributes="Bold" />
+                <Button Grid.Row="1" Grid.Column="2" Text="應付帳款" Command="{Binding GoToAccountPayablesCommand}"
+                        BackgroundColor="{StaticResource Tertiary}" TextColor="White"
+                        CornerRadius="6" Padding="16,10" FontSize="14" FontAttributes="Bold" />
+            </Grid>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

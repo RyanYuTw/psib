@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:PSIB.ViewModels"
+             xmlns:models="clr-namespace:PSIB.Models"
+             x:Class="PSIB.Views.Products.ProductListPage"
+             x:DataType="vm:ProductListViewModel"
+             Title="{Binding Title}">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <!-- 搜尋列 -->
+        <SearchBar Grid.Row="0"
+                   Text="{Binding SearchKeyword}"
+                   Placeholder="搜尋商品名稱或條碼..."
+                   Style="{StaticResource SearchBar}"
+                   SearchCommand="{Binding SearchCommand}" />
+
+        <!-- 列表 -->
+        <CollectionView Grid.Row="1"
+                        ItemsSource="{Binding Products}"
+                        SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:Product">
+                    <Frame Style="{StaticResource CardFrame}">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="{Binding Name}" FontSize="15" FontAttributes="Bold"
+                                       TextColor="{StaticResource TextPrimary}" />
+                                <HorizontalStackLayout Spacing="12">
+                                    <Label Text="{Binding Id, StringFormat='編號: {0}'}"
+                                           Style="{StaticResource SectionLabel}" />
+                                    <Label Text="{Binding Barcode, StringFormat='條碼: {0}'}"
+                                           Style="{StaticResource SectionLabel}"
+                                           IsVisible="{Binding Barcode, Converter={StaticResource StringNotEmptyConverter}}" />
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout Spacing="16">
+                                    <Label Text="{Binding Cost, StringFormat='成本: ${0:N0}'}"
+                                           FontSize="13" TextColor="{StaticResource TextSecondary}" />
+                                    <Label Text="{Binding Price, StringFormat='售價: ${0:N0}'}"
+                                           FontSize="13" TextColor="{StaticResource Primary}" />
+                                    <Label Text="{Binding CurrentVol, StringFormat='庫存: {0:N1}'}"
+                                           FontSize="13" TextColor="{StaticResource Secondary}" />
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
+                            <HorizontalStackLayout Grid.Column="1" Spacing="8" VerticalOptions="Center">
+                                <Button Text="編輯"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProductListViewModel}}, Path=EditCommand}"
+                                        CommandParameter="{Binding .}"
+                                        Style="{StaticResource SecondaryButton}" />
+                                <Button Text="刪除"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProductListViewModel}}, Path=DeleteCommand}"
+                                        CommandParameter="{Binding .}"
+                                        Style="{StaticResource DangerButton}" />
+                            </HorizontalStackLayout>
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+            <CollectionView.EmptyView>
+                <Label Text="目前無商品資料" TextColor="{StaticResource TextSecondary}"
+                       HorizontalOptions="Center" VerticalOptions="Center" Margin="0,40" />
+            </CollectionView.EmptyView>
+        </CollectionView>
+
+        <!-- 新增按鈕 -->
+        <Button Grid.Row="2"
+                Text="+ 新增商品"
+                Command="{Binding AddCommand}"
+                Style="{StaticResource PrimaryButton}"
+                Margin="16,8" />
+
+        <!-- 載入中 -->
+        <ActivityIndicator Grid.Row="1"
+                           IsRunning="{Binding IsBusy}"
+                           IsVisible="{Binding IsBusy}"
+                           Color="{StaticResource Primary}"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center" />
+    </Grid>
+</ContentPage>

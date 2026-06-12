@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:PSIB.ViewModels"
+             xmlns:models="clr-namespace:PSIB.Models"
+             x:Class="PSIB.Views.Sales.SaleListPage"
+             x:DataType="vm:SaleListViewModel"
+             Title="{Binding Title}">
+
+    <Grid RowDefinitions="Auto,Auto,*,Auto">
+        <Frame Grid.Row="0" Style="{StaticResource CardFrame}">
+            <Grid ColumnDefinitions="*,Auto,*" ColumnSpacing="8">
+                <DatePicker Date="{Binding FromDate, Mode=TwoWay}" Format="yyyy/MM/dd" />
+                <Label Grid.Column="1" Text="~" VerticalOptions="Center" />
+                <DatePicker Grid.Column="2" Date="{Binding ToDate, Mode=TwoWay}" Format="yyyy/MM/dd" />
+            </Grid>
+        </Frame>
+
+        <Label Grid.Row="1"
+               Text="{Binding ErrorMessage}"
+               TextColor="Red" FontSize="13"
+               Margin="16,0"
+               IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}" />
+
+        <CollectionView Grid.Row="2" ItemsSource="{Binding Sales}" SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:Sale">
+                    <Frame Style="{StaticResource CardFrame}">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <VerticalStackLayout Spacing="4">
+                                <HorizontalStackLayout Spacing="8">
+                                    <Label Text="{Binding Id}" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource Primary}" />
+                                    <Label Text="{Binding SaleDate, StringFormat='{0:yyyy/MM/dd}'}" FontSize="13" TextColor="{StaticResource TextSecondary}" />
+                                </HorizontalStackLayout>
+                                <Label Text="{Binding Customer.Name}" FontSize="14" TextColor="{StaticResource TextPrimary}" />
+                                <HorizontalStackLayout Spacing="16">
+                                    <Label Text="{Binding SubTotal, StringFormat='小計: ${0:N0}'}" FontSize="13" TextColor="{StaticResource TextSecondary}" />
+                                    <Label Text="{Binding Total, StringFormat='總計: ${0:N0}'}" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource Secondary}" />
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
+                            <HorizontalStackLayout Grid.Column="1" Spacing="8" VerticalOptions="Center">
+                                <Button Text="編輯"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:SaleListViewModel}}, Path=EditCommand}"
+                                        CommandParameter="{Binding .}" Style="{StaticResource SecondaryButton}" />
+                                <Button Text="刪除"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:SaleListViewModel}}, Path=DeleteCommand}"
+                                        CommandParameter="{Binding .}" Style="{StaticResource DangerButton}" />
+                            </HorizontalStackLayout>
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+            <CollectionView.EmptyView>
+                <Label Text="此期間無銷售資料" TextColor="{StaticResource TextSecondary}"
+                       HorizontalOptions="Center" VerticalOptions="Center" Margin="0,40" />
+            </CollectionView.EmptyView>
+        </CollectionView>
+
+        <Grid Grid.Row="3" ColumnDefinitions="*,*" ColumnSpacing="8" Margin="16,8">
+            <Button Text="查詢" Command="{Binding LoadCommand}" Style="{StaticResource SecondaryButton}" />
+            <Button Grid.Column="1" Text="+ 新增銷售" Command="{Binding AddCommand}" Style="{StaticResource PrimaryButton}" />
+        </Grid>
+        <ActivityIndicator Grid.Row="1" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
+                           Color="{StaticResource Primary}" HorizontalOptions="Center" VerticalOptions="Center" />
+    </Grid>
+</ContentPage>

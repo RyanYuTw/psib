@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:PSIB.ViewModels"
+             x:Class="PSIB.Views.Customers.CustomerDetailPage"
+             x:DataType="vm:CustomerDetailViewModel"
+             Title="{Binding Title}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="12">
+            <Frame Style="{StaticResource CardFrame}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="基本資料" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource Primary}" />
+                    <Label Text="客戶編號" Style="{StaticResource SectionLabel}" />
+                    <Entry Text="{Binding Id}" IsReadOnly="True" Style="{StaticResource FormEntry}" BackgroundColor="{StaticResource Gray100}" />
+                    <Label Text="客戶名稱 *" Style="{StaticResource SectionLabel}" />
+                    <Entry Text="{Binding Name}" Placeholder="請輸入客戶名稱" Style="{StaticResource FormEntry}" />
+                    <Label Text="統一編號" Style="{StaticResource SectionLabel}" />
+                    <Entry Text="{Binding BusinessNo}" Placeholder="8碼統一編號" MaxLength="8" Keyboard="Numeric" Style="{StaticResource FormEntry}" />
+                    <Label Text="聯絡人" Style="{StaticResource SectionLabel}" />
+                    <Entry Text="{Binding Contact}" Placeholder="選填" Style="{StaticResource FormEntry}" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <Frame Style="{StaticResource CardFrame}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="聯絡資訊" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource Primary}" />
+                    <Label Text="電話" Style="{StaticResource SectionLabel}" />
+                    <Entry Text="{Binding Phone}" Placeholder="02-XXXXXXXX" Style="{StaticResource FormEntry}" />
+                    <Label Text="手機" Style="{StaticResource SectionLabel}" />
+                    <Entry Text="{Binding Cell}" Placeholder="09XX-XXXXXX" Style="{StaticResource FormEntry}" />
+                    <Label Text="Email" Style="{StaticResource SectionLabel}" />
+                    <Entry Text="{Binding Email}" Placeholder="選填" Keyboard="Email" Style="{StaticResource FormEntry}" />
+                    <Label Text="地址" Style="{StaticResource SectionLabel}" />
+                    <Entry Text="{Binding Address}" Placeholder="選填" Style="{StaticResource FormEntry}" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <Frame Style="{StaticResource CardFrame}">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="信用額度" Style="{StaticResource SectionLabel}" />
+                    <Entry Text="{Binding CreditLimit}" Keyboard="Numeric" Placeholder="0" Style="{StaticResource FormEntry}" />
+                    <Label Text="備註" Style="{StaticResource SectionLabel}" />
+                    <Editor Text="{Binding Memo}" Placeholder="選填" HeightRequest="80" BackgroundColor="White" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <Label Text="{Binding ErrorMessage}" TextColor="{StaticResource Danger}" FontSize="13"
+                   IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}" />
+
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12" Margin="0,8">
+                <Button Text="取消" Command="{Binding CancelCommand}" Style="{StaticResource SecondaryButton}" />
+                <Button Grid.Column="1" Text="儲存" Command="{Binding SaveCommand}"
+                        Style="{StaticResource PrimaryButton}" IsEnabled="{Binding IsNotBusy}" />
+            </Grid>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
