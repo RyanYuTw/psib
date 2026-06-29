@@ -18,14 +18,35 @@ public class DatabaseSeeder
 
     public async Task SeedAsync()
     {
-        if (_db.Users.Any()) return;
+        if (!_db.Users.Any())
+        {
+            Randomizer.Seed = new Random(42);
+            await SeedBaseDataAsync();
+            await SeedMasterDataAsync();
+            await SeedTransactionDataAsync();
+            await _db.SaveChangesAsync();
+        }
 
-        Randomizer.Seed = new Random(42);
+        await SeedExtraUsersAsync();
+    }
 
-        await SeedBaseDataAsync();
-        await SeedMasterDataAsync();
-        await SeedTransactionDataAsync();
-        await _db.SaveChangesAsync();
+    private async Task SeedExtraUsersAsync()
+    {
+        var demoPwd = _config["SeedPasswords:Demo"];
+        if (demoPwd == null) return;
+
+        if (!_db.Users.Any(u => u.UserId == "demo"))
+        {
+            _db.Users.Add(new User
+            {
+                EmployeeNo = "9999",
+                UserId = "demo",
+                Password = BCrypt.Net.BCrypt.HashPassword(demoPwd),
+                Name = "示範帳號",
+                UserGroupId = "STAFF"
+            });
+            await _db.SaveChangesAsync();
+        }
     }
 
     private static string GenerateAndLogPassword(string role)
